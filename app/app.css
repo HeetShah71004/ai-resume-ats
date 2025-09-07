@@ -189,9 +189,153 @@ form {
   }
 }
 
+/* Enhanced Loading Animations */
+.loading-spinner {
+  @apply relative w-12 h-12;
+}
+
+.spinner-ring {
+  @apply absolute border-4 rounded-full;
+  width: 100%;
+  height: 100%;
+  border-color: #3b82f6 transparent transparent transparent;
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.spinner-ring:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.spinner-ring:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.spinner-ring:nth-child(3) {
+  animation-delay: -0.15s;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Enhanced Fade Animations */
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-fade-in-scale {
+  animation: fade-in-scale 0.5s ease-out forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+.animate-pulse-button {
+  animation: pulse-button 2s ease-in-out infinite;
+}
+
+/* Delay Classes */
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+/* Loading Progress Bar */
+.loading-progress-bar {
+  @apply absolute bottom-0 left-0 right-0 h-1 bg-gray-100 rounded-b-2xl overflow-hidden;
+}
+
+.loading-progress-fill {
+  @apply h-full bg-gradient-to-r from-blue-400 to-purple-500;
+  animation: progress-fill 2s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-button {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes progress-fill {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
 /* Skeleton Loading Styles */
 .resume-card-skeleton {
-  @apply flex flex-col gap-8 h-[560px] w-[350px] lg:w-[430px] xl:w-[490px] bg-white rounded-2xl p-4 border border-gray-100;
+  @apply flex flex-col gap-8 h-[560px] w-[350px] lg:w-[430px] xl:w-[490px] bg-white rounded-2xl p-4 border border-gray-100 relative;
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -296,4 +440,38 @@ form {
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
+}
+
+/* Resume Card Enhancements */
+.resume-card {
+  @apply transition-all duration-300 hover:scale-105 hover:shadow-xl;
+}
+
+.resume-card:hover .delete-button {
+  @apply opacity-100;
+}
+
+.delete-button {
+  @apply opacity-0 transition-opacity duration-200;
+}
+
+.resume-card:hover .delete-button {
+  @apply opacity-100;
+}
+
+/* Delete button animations */
+@keyframes deleteConfirm {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.delete-confirm {
+  animation: deleteConfirm 0.5s ease-in-out;
 }

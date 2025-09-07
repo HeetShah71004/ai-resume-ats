@@ -80,56 +80,82 @@ export default function Home() {
 
       <section className="main-section">
         <div className="page-heading py-16">
-          <h1>Track Your Applications & Resume Ratings</h1>
+          <h1 className="animate-fade-in-up">
+            Track Your Applications & Resume Ratings
+          </h1>
           {loadingResumes ? (
-            <div className="flex items-center gap-3">
-              <div className="loading-dots">
-                <div></div>
-                <div></div>
-                <div></div>
+            <div className="flex items-center gap-3 animate-fade-in">
+              <div className="loading-spinner">
+                <div className="spinner-ring"></div>
+                <div className="spinner-ring"></div>
+                <div className="spinner-ring"></div>
+                <div className="spinner-ring"></div>
               </div>
-              <h2>Loading your resumes...</h2>
+              <h2 className="animate-pulse">Loading your resumes...</h2>
             </div>
           ) : resumes?.length === 0 ? (
-            <h2>No resumes found. Upload your first resume to get feedback.</h2>
+            <h2 className="animate-fade-in-up delay-200">
+              No resumes found. Upload your first resume to get feedback.
+            </h2>
           ) : (
-            <h2>Review your submissions and check AI-powered feedback.</h2>
+            <h2 className="animate-fade-in-up delay-200">
+              Review your submissions and check AI-powered feedback.
+            </h2>
           )}
         </div>
         <div className="resumes-section">
           {loadingResumes
-            ? // Skeleton loading cards
+            ? // Enhanced skeleton loading cards with staggered animations
               Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="resume-card-skeleton">
+                <div
+                  key={index}
+                  className="resume-card-skeleton animate-fade-in-scale"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
                   <div className="skeleton-header">
-                    <div className="skeleton-image"></div>
+                    <div className="skeleton-image animate-shimmer"></div>
                     <div className="skeleton-text-group">
-                      <div className="skeleton-line skeleton-line-title"></div>
-                      <div className="skeleton-line skeleton-line-subtitle"></div>
+                      <div className="skeleton-line skeleton-line-title animate-shimmer"></div>
+                      <div className="skeleton-line skeleton-line-subtitle animate-shimmer"></div>
                     </div>
                   </div>
                   <div className="skeleton-content">
-                    <div className="skeleton-score-circle"></div>
+                    <div className="skeleton-score-circle animate-shimmer animate-pulse-slow"></div>
                     <div className="skeleton-feedback">
-                      <div className="skeleton-line skeleton-line-full"></div>
-                      <div className="skeleton-line skeleton-line-medium"></div>
-                      <div className="skeleton-line skeleton-line-short"></div>
+                      <div className="skeleton-line skeleton-line-full animate-shimmer"></div>
+                      <div className="skeleton-line skeleton-line-medium animate-shimmer"></div>
+                      <div className="skeleton-line skeleton-line-short animate-shimmer"></div>
                     </div>
+                  </div>
+                  {/* Loading progress indicator */}
+                  <div className="loading-progress-bar">
+                    <div className="loading-progress-fill"></div>
                   </div>
                 </div>
               ))
             : resumes.length > 0
-              ? resumes.map((resume) => (
-                  <ResumeCard key={resume.id} resume={resume} />
+              ? resumes.map((resume, index) => (
+                  <div
+                    key={resume.id}
+                    className="animate-fade-in-up"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <ResumeCard resume={resume} />
+                  </div>
                 ))
               : null}
         </div>
 
         {!loadingResumes && resumes?.length === 0 && (
-          <div className="flex flex-col items-center justify-center mt-10 gap-4">
+          <div className="flex flex-col items-center justify-center mt-10 gap-4 animate-fade-in-up delay-300">
+            <div className="text-6xl mb-4 animate-bounce-slow">📄</div>
+            <p className="text-gray-600 text-lg mb-6 text-center max-w-md">
+              Ready to get AI-powered feedback on your resume? Upload your first
+              resume to get started!
+            </p>
             <Link
               to="/upload"
-              className="primary-button w-fit text-xl font-semibold"
+              className="primary-button w-fit text-xl font-semibold transform hover:scale-105 transition-all duration-200 animate-pulse-button"
             >
               Upload Resume
             </Link>
