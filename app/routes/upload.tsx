@@ -18,50 +18,128 @@ const upload = () => {
     setFile(file);
   };
 
-   const handleAnalyze = async ({ companyName, jobTitle, jobDescription, file }: { companyName: string, jobTitle: string, jobDescription: string, file: File  }) => {
-        setIsProcessing(true);
+  const handleAnalyze = async ({
+    companyName,
+    jobTitle,
+    jobDescription,
+    file,
+  }: {
+    companyName: string;
+    jobTitle: string;
+    jobDescription: string;
+    file: File;
+  }) => {
+    try {
+      setIsProcessing(true);
 
-        setStatusText('Uploading the file...');
-        const uploadedFile = await fs.upload([file]);
-        if(!uploadedFile) return setStatusText('Error: Failed to upload file');
+      setStatusText("Uploading the file...");
+      const uploadedFile = await fs.upload([file]);
+      if (!uploadedFile) throw new Error("Failed to upload file");
 
-        setStatusText('Converting to image...');
-        const imageFile = await convertPdfToImage(file);
-        if(!imageFile.file) return setStatusText('Error: Failed to convert PDF to image');
+      setStatusText("Converting to image...");
+      const imageFile = await convertPdfToImage(file);
+      if (!imageFile.file) throw new Error("Failed to convert PDF to image");
 
-        setStatusText('Uploading the image...');
-        const uploadedImage = await fs.upload([imageFile.file]);
-        if(!uploadedImage) return setStatusText('Error: Failed to upload image');
+      setStatusText("Uploading the image...");
+      const uploadedImage = await fs.upload([imageFile.file]);
+      if (!uploadedImage) throw new Error("Failed to upload image");
 
-        setStatusText('Preparing data...');
-        const uuid = generateUUID();
-        const data = {
-            id: uuid,
-            resumePath: uploadedFile.path,
-            imagePath: uploadedImage.path,
-            companyName, jobTitle, jobDescription,
-            feedback: '',
-        }
-        await kv.set(`resume:${uuid}`, JSON.stringify(data));
+      setStatusText("Preparing data...");
+      const uuid = generateUUID();
+      const data = {
+        id: uuid,
+        resumePath: uploadedFile.path,
+        imagePath: uploadedImage.path,
+        companyName,
+        jobTitle,
+        jobDescription,
+        feedback: "",
+      };
+      await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
-        setStatusText('Analyzing...');
+      setStatusText("Analyzing...");
 
-        const feedback = await ai.feedback(
+      // Try analysis with retry mechanism
+      let feedback;
+      let retryCount = 0;
+      const maxRetries = 2;
+
+      while (retryCount < maxRetries) {
+        try {
+          feedback = await ai.feedback(
             uploadedFile.path,
             prepareInstructions({ jobTitle, jobDescription })
-        )
-        if (!feedback) return setStatusText('Error: Failed to analyze resume');
+          );
+          if (feedback) break;
+        } catch (aiError) {
+          console.warn(
+            `AI analysis attempt ${retryCount + 1} failed:`,
+            aiError
+          );
+          retryCount++;
+          if (retryCount < maxRetries) {
+            setStatusText(
+              `Analysis failed, retrying... (${retryCount}/${maxRetries})`
+            );
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          }
+        }
+      }
 
-        const feedbackText = typeof feedback.message.content === 'string'
-            ? feedback.message.content
-            : feedback.message.content[0].text;
+      if (!feedback)
+        throw new Error("Failed to analyze resume after multiple attempts");
 
-        data.feedback = JSON.parse(feedbackText);
+      const feedbackText =
+        typeof feedback.message.content === "string"
+          ? feedback.message.content
+          : feedback.message.content[0].text;
+
+      // Clean and validate JSON before parsing
+      try {
+        // Remove any potential markdown code blocks, extra formatting, and control characters
+        let cleanedText = feedbackText
+          .replace(/```json\s*/gi, "")
+          .replace(/```\s*$/g, "")
+          .replace(/^\s*```\s*/g, "")
+          .replace(/```\s*$/g, "")
+          .trim();
+
+        // Remove any non-printable characters that might cause issues
+        cleanedText = cleanedText.replace(/[\x00-\x1F\x7F-\x9F]/g, "");
+
+        // Find the first { and last } to extract just the JSON part
+        const firstBrace = cleanedText.indexOf("{");
+        const lastBrace = cleanedText.lastIndexOf("}");
+
+        if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+          cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
+        }
+
+        // Validate that it's proper JSON
+        const parsedFeedback = JSON.parse(cleanedText);
+        data.feedback = parsedFeedback;
+
         await kv.set(`resume:${uuid}`, JSON.stringify(data));
-        setStatusText('Analysis complete, redirecting...');
+        setStatusText("Analysis complete, redirecting...");
         console.log(data);
         navigate(`/resume/${uuid}`);
+      } catch (jsonError) {
+        console.error("JSON Parse Error:", jsonError);
+        console.log("Raw feedback text:", feedbackText);
+        console.log(
+          "Attempted to parse:",
+          feedbackText.substring(0, 500) + "..."
+        );
+        throw new Error("Failed to parse analysis results");
+      }
+    } catch (error) {
+      console.error("Handle Analyze Error:", error);
+      setStatusText(
+        `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}. Please try again.`
+      );
+      setIsProcessing(false);
     }
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
