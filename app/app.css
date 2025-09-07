@@ -3,8 +3,9 @@
 @import "tw-animate-css";
 
 @theme {
-  --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Mona Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-dark-200: #475467;
   --color-light-blue-100: #c1d3f81a;
   --color-light-blue-200: #a7bff14d;
@@ -73,6 +74,24 @@ form {
   }
   .auth-button {
     @apply primary-gradient rounded-full py-4 px-8 cursor-pointer w-[600px] max-md:w-full text-3xl font-semibold text-white;
+  }
+  .logout-button {
+    @apply bg-red-500 hover:bg-red-600 text-white rounded-full px-4 py-2 cursor-pointer w-fit transition-colors;
+  }
+  .user-menu-button {
+    @apply flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full px-4 py-2 cursor-pointer transition-colors border border-gray-300;
+  }
+  .dropdown-menu {
+    @apply absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50;
+  }
+  .dropdown-item {
+    @apply w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors cursor-pointer text-sm;
+  }
+  .logout-item {
+    @apply text-gray-700 hover:text-gray-900 hover:bg-blue-50;
+  }
+  .wipe-item {
+    @apply text-red-700 hover:text-red-900 hover:bg-red-100 border-t border-red-200;
   }
   .main-section {
     @apply flex flex-col items-center gap-8 pt-12 max-sm:mx-2 mx-15 pb-5;
@@ -149,4 +168,132 @@ form {
   to {
     opacity: 1;
   }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Skeleton Loading Styles */
+.resume-card-skeleton {
+  @apply flex flex-col gap-8 h-[560px] w-[350px] lg:w-[430px] xl:w-[490px] bg-white rounded-2xl p-4 border border-gray-100;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.skeleton-header {
+  @apply flex flex-row gap-4 items-center min-h-[110px];
+}
+
+.skeleton-image {
+  @apply w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-text-group {
+  @apply flex flex-col gap-3 flex-1;
+}
+
+.skeleton-line {
+  @apply bg-gray-200 rounded-md;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-line-title {
+  @apply h-5 w-3/4;
+}
+
+.skeleton-line-subtitle {
+  @apply h-4 w-1/2;
+}
+
+.skeleton-line-full {
+  @apply h-4 w-full;
+}
+
+.skeleton-line-medium {
+  @apply h-4 w-4/5;
+}
+
+.skeleton-line-short {
+  @apply h-4 w-3/5;
+}
+
+.skeleton-content {
+  @apply flex flex-col gap-6 flex-1;
+}
+
+.skeleton-score-circle {
+  @apply w-24 h-24 bg-gray-200 rounded-full mx-auto;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-feedback {
+  @apply flex flex-col gap-3;
+}
+
+/* Loading Dots Animation */
+.loading-dots {
+  @apply flex gap-1;
+}
+
+.loading-dots div {
+  @apply w-2 h-2 bg-dark-200 rounded-full;
+  animation: pulse-dot 1.4s infinite ease-in-out both;
+}
+
+.loading-dots div:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots div:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes pulse-dot {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
 }
