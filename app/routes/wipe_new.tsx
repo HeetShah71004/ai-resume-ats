@@ -53,7 +53,7 @@ const WipeApp = () => {
 
       // Auto-navigate to home after showing success message
       setTimeout(() => {
-        navigate("/?wiped=true");
+        navigate("/");
       }, 2000);
     } catch (err) {
       console.error("Failed to wipe data:", err);
