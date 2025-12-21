@@ -1,5 +1,5 @@
 import { prepareInstructions } from "../../constants";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router";
 import FileUploader from "~/components/FileUploader";
 import Navbar from "~/components/Navbar";
@@ -17,6 +17,12 @@ const upload = () => {
   const handleFileSelect = (file: File | null) => {
     setFile(file);
   };
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) {
+      navigate("/auth?next=/upload");
+    }
+  }, [auth.isAuthenticated, navigate]);
 
   const handleAnalyze = async ({
     companyName,

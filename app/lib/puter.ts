@@ -334,24 +334,23 @@ export const usePuterStore = create<PuterStore>((set, get) => {
       return;
     }
 
-    return puter.ai.chat(
-      [
-        {
-          role: "user",
-          content: [
-            {
-              type: "file",
-              puter_path: path,
-            },
-            {
-              type: "text",
-              text: message,
-            },
-          ],
-        },
-      ],
-      { model: "claude-3-7-sonnet" }
-    ) as Promise<AIResponse | undefined>;
+    // Use Puter's default model instead of a hard-coded one
+    // to avoid "Model not found" errors if model names change.
+    return puter.ai.chat([
+      {
+        role: "user",
+        content: [
+          {
+            type: "file",
+            puter_path: path,
+          },
+          {
+            type: "text",
+            text: message,
+          },
+        ],
+      },
+    ]) as Promise<AIResponse | undefined>;
   };
 
   const img2txt = async (image: string | File | Blob, testMode?: boolean) => {
